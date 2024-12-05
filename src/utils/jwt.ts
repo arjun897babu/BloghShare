@@ -14,7 +14,7 @@ class JWT {
     return sign(payload, this.refreshSecret, { expiresIn: expires });
   }
 
-  verifyAccessToken(token: string): JwtPayload | string {
+  verifyAccessToken(token: string): JwtPayload {
     try {
       return verify(token, this.accessSecret) as JwtPayload;
     } catch (error) {
