@@ -7,7 +7,7 @@ import { removeFile } from "../utils/remove-file";
 import { errorResponse } from "../utils/response";
 import { HttpStatusCode } from "axios";
 
-export const ErrorMiddleWare = (err: Error, req: Request, res: Response) => {
+export const ErrorMiddleware = (err: Error, req: Request, res: Response) => {
   const filePath = (req as MulterRequest).imagePath;
   if (filePath) {
     removeFile(filePath);
