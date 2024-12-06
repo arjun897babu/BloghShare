@@ -7,15 +7,19 @@ import { removeFile } from "../utils/remove-file";
 import { errorResponse } from "../utils/response";
 import { HttpStatusCode } from "axios";
 
-export const ErrorMiddleware = (err: Error, req: Request, res: Response,next:NextFunction) => {
-  console.log('reaching in eror handler')
+export const ErrorMiddleware = (
+  err: Error,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  console.log("reaching in eror handler");
   const filePath = (req as MulterRequest).imagePath;
   if (filePath) {
     removeFile(filePath);
   }
 
   if (err instanceof MulterError) {
-    
   } else if (err instanceof CustomError) {
     const error = err.field ? { [err.field]: err.message } : err.err;
     return errorResponse(
@@ -29,4 +33,13 @@ export const ErrorMiddleware = (err: Error, req: Request, res: Response,next:Nex
       common: err.message,
     });
   }
+};
+
+export const wildCardMiddleware = (err: Error, req: Request, res: Response) => {
+  return errorResponse(
+    res,
+    HttpStatusCode.NotFound,
+    "requested url is not found",
+    { common: "requested url is not found" }
+  );
 };

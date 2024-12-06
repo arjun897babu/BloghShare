@@ -8,8 +8,7 @@ import { validationMiddleWare } from "../middleware/validation-middleware";
 import { loginSchema, signupSchema } from "../utils/zod-schema";
 
 const bcrypt = new Bcrypt();
-const jwt = new JWT();
-const auth = new Auth(jwt);
+export const jwt = new JWT();
 const userService = new UserService(bcrypt, jwt);
 const userController = new UserController(userService);
 

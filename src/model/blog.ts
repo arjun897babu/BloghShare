@@ -1,10 +1,11 @@
 import { model, Schema } from "mongoose";
 import { IBlog } from "../interface/blog";
 import { generateRandomUUID } from "../utils/validator-helper";
+import { string } from "zod";
 
 const blogSchema = new Schema<IBlog>({
   userId: {
-    type: Schema.Types.ObjectId,
+    type: String,
     required: true,
   },
   title: {
@@ -20,12 +21,18 @@ const blogSchema = new Schema<IBlog>({
     trim: true,
   },
   file: {
-    type: String,
-    required: true,
+    publicId: {
+      type: String,
+      required: true,
+    },
+    url: {
+      type: String,
+      required: true,
+    },
   },
-  uId:{
-    type:String
-  }
+  uId: {
+    type: String,
+  },
 });
 
 blogSchema.pre("save", function (next) {
