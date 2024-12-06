@@ -13,11 +13,14 @@ export interface ICreateUser extends IResponse {
 }
 
 export interface ILogin extends IResponse {
-  token: string;
-  refreshToken:string
+  data: {
+    user:Pick<IUser,'email'|'name'|'uId'>
+    token: string;
+    refreshToken: string;
+  }
 }
 
 export interface IUserService {
   create: (userData: IUser) => Promise<ICreateUser>;
-  login: (userData:Pick<IUser,'email'|'password'>) => Promise<ILogin>;
+  login: (userData: Pick<IUser, "email" | "password">) => Promise<ILogin>;
 }

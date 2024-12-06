@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { HttpStatusCode } from "axios";
 import { IUserService } from "../interface/user";
-import { successResponse } from "../utils/response";
+import { errorResponse, successResponse } from "../utils/response";
 import { Cookie, Node_ENV } from "../utils/enum";
+import { CustomError } from "../utils/custom-error";
 
 class UserController {
   private userService;
@@ -13,10 +14,11 @@ class UserController {
     try {
       const formData = req.body;
       const response = await this.userService.login(formData);
+
       if (response) {
-        res.cookie(Cookie.refresh, response.refreshToken, {
+        res.cookie(Cookie.refresh, response.data.refreshToken, {
           httpOnly: true,
-          secure:process.env.NODE_ENV===Node_ENV.PROD,
+          secure: process.env.NODE_ENV === Node_ENV.PROD,
           maxAge: 7 * 24 * 60 * 60 * 1000,
         });
 
@@ -24,7 +26,7 @@ class UserController {
           res,
           HttpStatusCode.Ok,
           response.message,
-          response.token
+          {token:response.data.token,user:response.data.user}
         );
       }
     } catch (error) {
@@ -44,7 +46,7 @@ class UserController {
           response.data
         );
       }
-    } catch (error) {
+    } catch (error) { 
       next(error);
     }
   }

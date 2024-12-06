@@ -31,10 +31,5 @@ export const signupSchema = z
       .nonempty(errorMessage("name"))
       .regex(/^.{3,25}$/, "min 3-25 character needed")
       .regex(/^[a-zA-Z]+(?: [a-zA-Z]+)*$/, invalidMessage("name")),
-    confirm_password: passwordSchema,
   })
   .merge(loginSchema)
-  .refine((data) => data.password === data.confirm_password, {
-    message: "Passwords do not match",
-    path: ["confirm_password"],
-  });

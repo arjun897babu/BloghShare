@@ -1,17 +1,20 @@
 import express from "express";
 import Cors from "cors";
 import morgan from "morgan";
-
+import dotenv from "dotenv";
+ import cookieParser from "cookie-parser";
+dotenv.config();
 export const App = express();
 
-const HOST = process.env.HOST || "localhost";
-const PORT = process.env.PORT || 8080;
-const ORIGIN = process.env.ORIGIN || "3000";
-
+const HOST = process.env.HOST
+const PORT = process.env.PORT 
+const ORIGIN = process.env.ORIGIN
+App.use(cookieParser())
 App.use(
   Cors({
     origin: ORIGIN,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    credentials:true
   })
 );
 

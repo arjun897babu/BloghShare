@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { Error } from "mongoose";
 import { CustomError } from "../utils/custom-error";
 import { MulterError } from "multer";
@@ -7,7 +7,8 @@ import { removeFile } from "../utils/remove-file";
 import { errorResponse } from "../utils/response";
 import { HttpStatusCode } from "axios";
 
-export const ErrorMiddleware = (err: Error, req: Request, res: Response) => {
+export const ErrorMiddleware = (err: Error, req: Request, res: Response,next:NextFunction) => {
+  console.log('reaching in eror handler')
   const filePath = (req as MulterRequest).imagePath;
   if (filePath) {
     removeFile(filePath);

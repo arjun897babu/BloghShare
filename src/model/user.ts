@@ -21,11 +21,10 @@ const userSchema = new Schema<IUser>({
   },
   uId: {
     type: String,
-    required: true,
-  },
+   },
 });
 
-userSchema.pre("save", function (next) {
+userSchema.pre<IUser>("save", function (next) {
   if (!this.uId) {
     this.uId = generateRandomUUID();
   }

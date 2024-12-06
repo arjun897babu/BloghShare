@@ -23,6 +23,9 @@ const blogSchema = new Schema<IBlog>({
     type: String,
     required: true,
   },
+  uId:{
+    type:String
+  }
 });
 
 blogSchema.pre("save", function (next) {

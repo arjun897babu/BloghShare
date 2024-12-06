@@ -82,8 +82,15 @@ export class UserService implements IUserService {
       return {
         status: ResponseStatus.SUCCESS,
         message: "user logged successfully",
-        token,
-        refreshToken: refresh,
+        data: {
+          user:{
+            name:user.name,
+            email:user.email,
+            uId:user.uId
+          },
+          token: token,
+          refreshToken: refresh,
+        },
       };
     } catch (error) {
       throw error;
