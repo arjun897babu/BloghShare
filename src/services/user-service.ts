@@ -75,7 +75,7 @@ export class UserService implements IUserService {
       }
 
       const payload = { _id: user.uId, role: "blogger" } as JwtPayload;
-      const token = this.jwt.createAccessToken(payload, "15m");
+      const token = this.jwt.createAccessToken(payload, "1d");
 
       const refresh = this.jwt.createRefreshToken(payload, "7d");
 

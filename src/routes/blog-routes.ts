@@ -5,25 +5,51 @@ import { validationMiddleWare } from "../middleware/validation-middleware";
 import { blogSchema } from "../utils/zod-schema";
 import { Auth } from "../middleware/auth-middleware";
 import { jwt } from "./user-routes";
+import { CloudinaryService } from "../utils/cloudinary";
+import { upload } from "../middleware/multer";
 
-const authMiddleWare = new Auth(jwt)
-const blogService = new BlogService();
+const cloudinary = new CloudinaryService();
+const authMiddleWare = new Auth(jwt);
+const blogService = new BlogService(cloudinary);
 const blogController = new BlogController(blogService);
 
 const blogRoutes = Router();
 
-blogRoutes.use(authMiddleWare.isAuth.bind(authMiddleWare))
+blogRoutes
+  .route("/:blogId?")
+  .get(
+    authMiddleWare.isAuth.bind(authMiddleWare),
+    blogController.getAll.bind(blogController)
+  )
+  .get(
+    authMiddleWare.isAuth.bind(authMiddleWare),
+    blogController.getSingle.bind(blogController)
+  )
 
 blogRoutes
-  .route("/")
-  .get(blogController.getAll.bind(blogController))
-  .post(validationMiddleWare(blogSchema),blogController.create.bind(blogController));
+  .route("/user/blog")
+  .get(
+    authMiddleWare.isAuth.bind(authMiddleWare),
+    blogController.getUserBlogs.bind(blogController)
+  )
+  .post(
+    authMiddleWare.isAuth.bind(authMiddleWare),
+    upload.single("file"),
+    validationMiddleWare(blogSchema),
+    blogController.create.bind(blogController)
+  );
+
 blogRoutes
-  .route("/:userId")
-  .get(blogController.getUserBlogs.bind(blogController));
-blogRoutes
-  .route("/:blogId")
-  .get(blogController.getSingle.bind(blogController))
-  .delete(blogController.delete.bind(blogController))
-  .put(validationMiddleWare(blogSchema),blogController.update.bind(blogController));
-export default blogRoutes
+  .route("/user/:blogId")
+  .put(
+    authMiddleWare.isAuth.bind(authMiddleWare),
+    upload.single("file"),
+    validationMiddleWare(blogSchema),
+    blogController.update.bind(blogController)
+  )
+  .delete(
+    authMiddleWare.isAuth.bind(authMiddleWare),
+    blogController.delete.bind(blogController)
+  );
+
+export default blogRoutes;

@@ -15,8 +15,8 @@ connectDB();
 app.use("/", userRoutes);
 app.use("/blogs", blogRoutes);
 
-app.use("*", wildCardMiddleware);
 app.use(ErrorMiddleware);
+app.use("*", wildCardMiddleware);
 
 app.listen(PORT, () => {
   console.log(`server is running on port: http://${HOST}:${PORT}`);

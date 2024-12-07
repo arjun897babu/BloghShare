@@ -1,9 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { HttpStatusCode } from "axios";
 import { IUserService } from "../interface/user";
-import { errorResponse, successResponse } from "../utils/response";
+import {  successResponse } from "../utils/response";
 import { Cookie, Node_ENV } from "../utils/enum";
-import { CustomError } from "../utils/custom-error";
 
 class UserController {
   private userService;
@@ -53,7 +52,19 @@ class UserController {
 
   async logout(req: Request, res: Response, next: NextFunction) {
     try {
-    } catch (error) {}
+      res.clearCookie(Cookie.refresh, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', 
+      });
+
+      return successResponse(
+        res,HttpStatusCode.Ok,'logged out successfully',
+        undefined
+      )
+  
+    } catch (error) {
+      next(error)
+    }
   }
 }
 

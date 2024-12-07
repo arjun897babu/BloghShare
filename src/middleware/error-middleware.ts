@@ -14,6 +14,7 @@ export const ErrorMiddleware = (
   next: NextFunction
 ) => {
   console.log("reaching in eror handler");
+  console.log(err)
   const filePath = (req as MulterRequest).imagePath;
   if (filePath) {
     removeFile(filePath);
@@ -35,7 +36,7 @@ export const ErrorMiddleware = (
   }
 };
 
-export const wildCardMiddleware = (err: Error, req: Request, res: Response) => {
+export const wildCardMiddleware = (err: Error, req: Request, res: Response,next:NextFunction) => {
   return errorResponse(
     res,
     HttpStatusCode.NotFound,

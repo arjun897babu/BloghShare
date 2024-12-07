@@ -18,15 +18,14 @@ export class Auth {
         throw new CustomError(
           HttpStatusCode.Unauthorized,
           "Unauthorized",
-          "password"
+          "common"
         );
       }
 
       const decoded: JwtPayload = this.jwt.verifyAccessToken(token);
-
       if (decoded && decoded.role === "blogger") {
         req.params.userId = decoded._id;
-        return next();
+         return next();
       }
     } catch (error) {
       next(error);

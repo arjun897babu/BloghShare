@@ -8,8 +8,10 @@ export interface IUser extends Document {
   password: string;
 }
 
+export type IUserBase =  Pick<IUser, "name" | "email" | "uId">;
+
 export interface ICreateUser extends IResponse {
-  data: Pick<IUser, "name" | "email" | "uId">;
+  data:IUserBase
 }
 
 export interface ILogin extends IResponse {
