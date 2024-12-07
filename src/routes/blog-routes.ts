@@ -4,12 +4,12 @@ import { BlogService } from "../services/blog-service";
 import { validationMiddleWare } from "../middleware/validation-middleware";
 import { blogSchema } from "../utils/zod-schema";
 import { Auth } from "../middleware/auth-middleware";
-import { jwt } from "./user-routes";
+import { authMiddleWare, jwt } from "./user-routes";
 import { CloudinaryService } from "../utils/cloudinary";
 import { upload } from "../middleware/multer";
 
 const cloudinary = new CloudinaryService();
-const authMiddleWare = new Auth(jwt);
+
 const blogService = new BlogService(cloudinary);
 const blogController = new BlogController(blogService);
 

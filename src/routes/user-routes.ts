@@ -9,6 +9,7 @@ import { loginSchema, signupSchema } from "../utils/zod-schema";
 
 const bcrypt = new Bcrypt();
 export const jwt = new JWT();
+export const authMiddleWare = new Auth(jwt);
 const userService = new UserService(bcrypt, jwt);
 const userController = new UserController(userService);
 
@@ -24,5 +25,11 @@ userRoutes.post(
     "/auth/signup",
     validationMiddleWare(signupSchema),
    userController.signUp.bind(userController)
+);
+
+userRoutes.post(
+    "/auth/logout",
+    authMiddleWare.isAuth.bind(authMiddleWare),
+   userController.logout.bind(userController)
 );
 export default userRoutes;
