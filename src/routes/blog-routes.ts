@@ -16,15 +16,19 @@ const blogController = new BlogController(blogService);
 const blogRoutes = Router();
 
 blogRoutes
-  .route("/:blogId?")
+  .route("/")
   .get(
     authMiddleWare.isAuth.bind(authMiddleWare),
     blogController.getAll.bind(blogController)
   )
+  
+blogRoutes
+  .route("/blog/:blogId")
   .get(
     authMiddleWare.isAuth.bind(authMiddleWare),
     blogController.getSingle.bind(blogController)
   )
+  
 
 blogRoutes
   .route("/user/blog")
@@ -37,7 +41,8 @@ blogRoutes
     upload.single("file"),
     validationMiddleWare(blogSchema),
     blogController.create.bind(blogController)
-  );
+  )
+
 
 blogRoutes
   .route("/user/:blogId")

@@ -94,7 +94,28 @@ export class BlogService implements IBlogService {
   }
   async getSingle(blogId: string): Promise<BlogResponse> {
     try {
-      const singleBlog = await Blog.findOne({ uId: blogId }).lean();
+      const [singleBlog=null] = await Blog.aggregate([
+        { $match: {uId:blogId} },
+        {
+          $lookup: {
+            localField: "userId",
+            foreignField: "uId",
+            from: "users",
+            as: "user",
+          },
+        },
+        {
+          $unwind: "$user",
+        },
+        {
+          $project: {
+            _id: 0,
+            "user.password": 0, 
+            "user._id": 0,
+          },
+        },
+      ])
+      console.log(singleBlog)
       if (!singleBlog) {
         throw new CustomError(
           HttpStatusCode.NotFound,

@@ -77,9 +77,12 @@ export class BlogController {
     }
   }
   async getSingle(req: Request, res: Response, next: NextFunction) {
+    console.log('calling get single cont');
     try {
       const { userId, blogId } = req.params;
       const response = await this.blogService.getSingle(blogId);
+      console.log(response);
+      
       return successResponse(
         res,
         HttpStatusCode.Ok,
