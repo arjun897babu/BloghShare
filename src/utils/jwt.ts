@@ -42,13 +42,13 @@ class JWT {
         throw new CustomError(
           HttpStatusCode.Unauthorized,
           "Access token expired",
-          "token"
+          "common"
         );
       } else {
         throw new CustomError(
           HttpStatusCode.Forbidden,
           "Invalid token",
-          "token"
+          "common"
         );
       }
     }

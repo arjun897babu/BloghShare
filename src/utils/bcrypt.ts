@@ -4,7 +4,7 @@ class Bcrypt {
   private salt: number = 10;
   async hash(password: string): Promise<string> {
     try {
-      const hashedPassword = bcrypt.hash(password, this.salt);
+      const hashedPassword =await bcrypt.hash(password, this.salt);
       return hashedPassword;
     } catch (error) {
       throw error;
@@ -13,7 +13,7 @@ class Bcrypt {
 
   async compare(reqPassword: string, hashedPassword: string): Promise<boolean> {
     try {
-      const isTrue = bcrypt.compare(reqPassword, hashedPassword);
+      const isTrue = await bcrypt.compare(reqPassword, hashedPassword);
       return isTrue;
     } catch (error) {
       throw error;

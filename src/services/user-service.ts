@@ -61,7 +61,7 @@ export class UserService implements IUserService {
           "email"
         );
       }
-      const comparePassword = this.bcrypt.compare(
+      const comparePassword = await this.bcrypt.compare(
         userData.password,
         user.password
       );
@@ -75,7 +75,7 @@ export class UserService implements IUserService {
       }
 
       const payload = { _id: user.uId, role: "blogger" } as JwtPayload;
-      const token = this.jwt.createAccessToken(payload, "1d");
+      const token = this.jwt.createAccessToken(payload, "15m");
 
       const refresh = this.jwt.createRefreshToken(payload, "7d");
 

@@ -16,7 +16,7 @@ export class BlogController {
       (req as MulterRequest).imagePath = imagePath?.path;
       const { userId } = req.params;
       if (!userId) {
-        throw new CustomError(401, "unauthorized", "userId");
+        throw new CustomError(401, "unauthorized", "common");
       }
 
       const blogData = req.body;
