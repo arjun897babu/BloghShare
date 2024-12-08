@@ -18,3 +18,8 @@ export interface IResponse {
   status: ResponseStatus;
   message: string;
 }
+
+export type IFilter = {
+  search: string;
+  pageNumber: number;
+};

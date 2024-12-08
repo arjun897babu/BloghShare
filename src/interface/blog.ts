@@ -1,5 +1,5 @@
 import { Document } from "mongoose";
-import { IResponse } from "../utils/types";
+import { IFilter, IResponse } from "../utils/types";
 import { IUserBase } from "./user";
 
 export interface IBlog extends Document {
@@ -33,6 +33,8 @@ export interface IBlogCU extends IResponse{
 export interface IGetAllBlogs extends IResponse {
   data: {
     blog: SingleBlog[];
+    limit?:number,
+    totalPage?:number
   };
 }
 
@@ -49,7 +51,7 @@ export interface IBlogService {
     imageId?:string
   ) => Promise<IBlogCU>;
   getSingle: (blogId: string) => Promise<BlogResponse>;
-  getAll: () => Promise<IGetAllBlogs>;
+  getAll: (filter:IFilter) => Promise<IGetAllBlogs>;
   delete: (blogId: string,imageId:string) => Promise<IResponse>;
   getUserBlog: (userId: string) => Promise<IGetAllBlogs>;
 }

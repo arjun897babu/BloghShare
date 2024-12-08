@@ -6,16 +6,18 @@ import {
   IGetAllBlogs,
   SingleBlog,
 } from "../interface/blog";
-import { IResponse } from "../utils/types";
+import { IFilter, IResponse } from "../utils/types";
 import { ResponseStatus } from "../utils/enum";
 import { Blog } from "../model/blog";
 import { CustomError } from "../utils/custom-error";
 import { HttpStatusCode } from "axios";
 import { CloudinaryService } from "../utils/cloudinary";
 import { removeFile } from "../utils/remove-file";
+import { calculateSkip, calculateTotalPage } from "../utils/validator-helper";
 
 export class BlogService implements IBlogService {
   private folder = process.env.app!;
+  private pageLimit: number = 3;
   private cloudinary;
   constructor(cloudinary: CloudinaryService) {
     this.cloudinary = cloudinary;
@@ -47,7 +49,7 @@ export class BlogService implements IBlogService {
       throw error;
     }
   }
-  async delete(blogId: string,imageId:string): Promise<IResponse> {
+  async delete(blogId: string, imageId: string): Promise<IResponse> {
     const deleted = await Blog.findOneAndDelete({ uId: blogId }).lean();
     if (!deleted) {
       throw new CustomError(
@@ -65,9 +67,17 @@ export class BlogService implements IBlogService {
       message: "blog deleted successfully",
     };
   }
-  async getAll(): Promise<IGetAllBlogs> {
-    const allBlogs = await Blog.aggregate([
-      { $match: {} },
+  async getAll({ pageNumber, search }: IFilter): Promise<IGetAllBlogs> {
+    const skip = calculateSkip(search === "" ? pageNumber : 1, this.pageLimit);
+    const [allBlogs = []] = await Blog.aggregate([
+      {
+        $match: {
+          title: { 
+            $regex: search ? search : "", 
+            $options: "i"         
+          }
+        },
+      },
       {
         $lookup: {
           localField: "userId",
@@ -80,22 +90,45 @@ export class BlogService implements IBlogService {
         $unwind: "$user",
       },
       {
+        $facet: {
+          totalDocument: [{ $count: "count" }],
+          data: [
+            { $skip: skip },
+            { $limit: this.pageLimit },
+            {
+              $project: {
+                _id: 0,
+                __v: 0,
+                updatedAt: 0,
+                "user.password": 0,
+                "user._id": 0,
+                "user.__v": 0,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $unwind: "$totalDocument",
+      },
+      {
         $project: {
-          _id: 0,
-          "user.password": 0,
-          "user._id": 0,
+          totalCount: "$totalDocument.count",
+          data: "$data",
         },
       },
     ]);
+
     return this.generateResponseObject(
-      allBlogs,
-      "all blogs fetched successfully"
+      allBlogs.data,
+      "all blogs fetched successfully",
+      allBlogs.totalCount
     ) as IGetAllBlogs;
   }
   async getSingle(blogId: string): Promise<BlogResponse> {
     try {
-      const [singleBlog=null] = await Blog.aggregate([
-        { $match: {uId:blogId} },
+      const [singleBlog = null] = await Blog.aggregate([
+        { $match: { uId: blogId } },
         {
           $lookup: {
             localField: "userId",
@@ -110,12 +143,12 @@ export class BlogService implements IBlogService {
         {
           $project: {
             _id: 0,
-            "user.password": 0, 
+            "user.password": 0,
             "user._id": 0,
           },
         },
-      ])
-      console.log(singleBlog)
+      ]);
+      console.log(singleBlog);
       if (!singleBlog) {
         throw new CustomError(
           HttpStatusCode.NotFound,
@@ -134,8 +167,9 @@ export class BlogService implements IBlogService {
   }
   async getUserBlog(userId: string): Promise<IGetAllBlogs> {
     try {
+      console.log(userId);
       const userBlogs = await Blog.aggregate([
-        { $match: {} },
+        { $match: {userId:userId} },
         {
           $lookup: {
             localField: "userId",
@@ -182,7 +216,7 @@ export class BlogService implements IBlogService {
           url: url,
         };
       }
- 
+
       const updated = await Blog.findOneAndUpdate(
         { uId: blogId },
         { $set: { ...blogData } },
@@ -208,23 +242,24 @@ export class BlogService implements IBlogService {
 
   private generateResponseObject(
     data: SingleBlog | SingleBlog[] | IBlogBase,
-    message: string
+    message: string,
+    totalPage?: number
   ): BlogResponse | IGetAllBlogs | IBlogCU {
-    const isSingleBlog = !Array.isArray(data);
-    const isIBlogBase = (data as SingleBlog).user == undefined;
-
+    const arrayData = Array.isArray(data);
     const obj: any = {
       status: ResponseStatus.SUCCESS,
       message: message,
       data: {},
     };
 
-    if (isIBlogBase) {
-      obj.data.blog = data as IBlogBase;
-    } else if (isSingleBlog) {
-      obj.data.blog = data as SingleBlog;
-    } else {
+    if (arrayData && totalPage) {
+      obj.data.limit = this.pageLimit;
+      obj.data.totalPage = calculateTotalPage(totalPage ?? 0, this.pageLimit);
       obj.data.blog = data as SingleBlog[];
+    } else if (arrayData && !totalPage) {
+      obj.data.blog = data as SingleBlog[];
+    } else {
+      obj.data.blog = data as IBlogBase;
     }
 
     return obj;
