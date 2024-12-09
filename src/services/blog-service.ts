@@ -148,7 +148,6 @@ export class BlogService implements IBlogService {
           },
         },
       ]);
-      console.log(singleBlog);
       if (!singleBlog) {
         throw new CustomError(
           HttpStatusCode.NotFound,
@@ -167,7 +166,6 @@ export class BlogService implements IBlogService {
   }
   async getUserBlog(userId: string): Promise<IGetAllBlogs> {
     try {
-      console.log(userId);
       const userBlogs = await Blog.aggregate([
         { $match: {userId:userId} },
         {

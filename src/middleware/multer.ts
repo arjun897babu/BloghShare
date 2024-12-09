@@ -17,7 +17,6 @@ const fileFilter = (
   cb: FileFilterCallback
 ) => {
    const supportedImages = [ ".jpg", ".png", ".gif", ".webp",".jpeg"];
-   console.log('extname', path.extname(file.originalname).toLowerCase())
   const isAllowed = supportedImages.includes(
     path.extname(file.originalname).toLowerCase()
   );
