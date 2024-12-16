@@ -8,15 +8,22 @@ export interface IUser extends Document {
   password: string;
 }
 
-export type IUserBase =  Pick<IUser, "name" | "email" | "uId">;
+export type IUserBase = Pick<IUser, "name" | "email" | "uId">;
 
 export interface ICreateUser extends IResponse {
-  data:IUserBase
+  data: IUserBase
 }
 
 export interface ILogin extends IResponse {
   data: {
-    user:Pick<IUser,'email'|'name'|'uId'>
+    user: Pick<IUser, 'email' | 'name' | 'uId'>
+    token: string;
+    refreshToken: string;
+  }
+}
+
+export interface IRefresh extends IResponse {
+  data: {
     token: string;
     refreshToken: string;
   }
@@ -25,4 +32,5 @@ export interface ILogin extends IResponse {
 export interface IUserService {
   create: (userData: IUser) => Promise<ICreateUser>;
   login: (userData: Pick<IUser, "email" | "password">) => Promise<ILogin>;
+  refresh: (userId: string) => Promise<IRefresh>
 }

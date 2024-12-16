@@ -22,14 +22,21 @@ userRoutes.post(
 );
 
 userRoutes.post(
-    "/auth/signup",
-    validationMiddleWare(signupSchema),
-   userController.signUp.bind(userController)
+  "/auth/signup",
+  validationMiddleWare(signupSchema),
+  userController.signUp.bind(userController)
 );
 
 userRoutes.post(
-    "/auth/logout",
-    authMiddleWare.isAuth.bind(authMiddleWare),
-   userController.logout.bind(userController)
+  "/auth/logout",
+  authMiddleWare.isAuth.bind(authMiddleWare),
+  userController.logout.bind(userController)
 );
+
+userRoutes.post(
+  "/auth/refresh",
+  authMiddleWare.isRefresh.bind(authMiddleWare),
+  userController.refresh.bind(userController),
+);
+
 export default userRoutes;

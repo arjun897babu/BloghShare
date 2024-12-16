@@ -1,5 +1,5 @@
 import { HttpStatusCode } from "axios";
-import { ICreateUser, IUser, IUserService, ILogin } from "../interface/user";
+import { ICreateUser, IUser, IUserService, ILogin, IRefresh } from "../interface/user";
 import { User } from "../model/user";
 import { Bcrypt } from "../utils/bcrypt";
 import { CustomError } from "../utils/custom-error";
@@ -75,7 +75,7 @@ export class UserService implements IUserService {
       }
 
       const payload = { _id: user.uId, role: "blogger" } as JwtPayload;
-      const token = this.jwt.createAccessToken(payload, "15m");
+      const token = this.jwt.createAccessToken(payload, "2m");
 
       const refresh = this.jwt.createRefreshToken(payload, "7d");
 
@@ -83,10 +83,10 @@ export class UserService implements IUserService {
         status: ResponseStatus.SUCCESS,
         message: "user logged successfully",
         data: {
-          user:{
-            name:user.name,
-            email:user.email,
-            uId:user.uId
+          user: {
+            name: user.name,
+            email: user.email,
+            uId: user.uId
           },
           token: token,
           refreshToken: refresh,
@@ -94,6 +94,25 @@ export class UserService implements IUserService {
       };
     } catch (error) {
       throw error;
+    }
+  }
+
+  async refresh(userId: string): Promise<IRefresh> {
+
+    try {
+      const token = this.jwt.createAccessToken({ _id: userId, role: 'blogger' }, '1m')
+      const refreshToken = this.jwt.createRefreshToken({ _id: userId, role: 'blogger' }, '7d')
+      return {
+        status: ResponseStatus.SUCCESS,
+        message: "token generated successFully",
+        data: {
+          token,
+          refreshToken
+        },
+      };
+
+    } catch (error) {
+      throw error
     }
   }
 }

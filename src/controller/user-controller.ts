@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { HttpStatusCode } from "axios";
 import { IUserService } from "../interface/user";
-import {  successResponse } from "../utils/response";
+import { successResponse } from "../utils/response";
 import { Cookie, Node_ENV } from "../utils/enum";
 
 class UserController {
@@ -25,7 +25,7 @@ class UserController {
           res,
           HttpStatusCode.Ok,
           response.message,
-          {token:response.data.token,user:response.data.user}
+          { token: response.data.token, user: response.data.user }
         );
       }
     } catch (error) {
@@ -45,7 +45,7 @@ class UserController {
           response.data
         );
       }
-    } catch (error) { 
+    } catch (error) {
       next(error);
     }
   }
@@ -54,18 +54,43 @@ class UserController {
     try {
       res.clearCookie(Cookie.refresh, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', 
+        secure: process.env.NODE_ENV === 'production',
       });
 
       return successResponse(
-        res,HttpStatusCode.Ok,'logged out successfully',
+        res, HttpStatusCode.Ok, 'logged out successfully',
         undefined
       )
-  
+
     } catch (error) {
       next(error)
     }
   }
+
+  async refresh(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.params.userId
+      const response = await this.userService.refresh(userId);
+
+      if (response) {
+        res.cookie(Cookie.refresh, response.data.refreshToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === Node_ENV.PROD,
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+
+        return successResponse(
+          res,
+          HttpStatusCode.Ok,
+          response.message,
+          { token: response.data.token }
+        );
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+
 }
 
 export { UserController };

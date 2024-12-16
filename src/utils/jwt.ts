@@ -34,7 +34,7 @@ class JWT {
     }
   }
 
-  verifyRefreshToken(token: string): JwtPayload | string {
+  verifyRefreshToken(token: string): JwtPayload  {
     try {
       return verify(token, this.refreshSecret) as JwtPayload;
     } catch (error) {
