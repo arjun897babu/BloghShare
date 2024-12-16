@@ -100,7 +100,7 @@ export class UserService implements IUserService {
   async refresh(userId: string): Promise<IRefresh> {
 
     try {
-      const token = this.jwt.createAccessToken({ _id: userId, role: 'blogger' }, '1m')
+      const token = this.jwt.createAccessToken({ _id: userId, role: 'blogger' }, '5m')
       const refreshToken = this.jwt.createRefreshToken({ _id: userId, role: 'blogger' }, '7d')
       return {
         status: ResponseStatus.SUCCESS,
